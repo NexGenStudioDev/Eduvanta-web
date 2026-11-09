@@ -1,31 +1,37 @@
 import { useEffect } from 'react';
 import { setAlbum } from '../store/homeSlice';
 import { Album_EndPoint } from '../utils/constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
 
 const useAlbum = () => {
-   let Album = useSelector(state => state.home.Album);
-   let dispatch = useDispatch();
-
-   const Handle_Album = async () => {
-      try {
-         const response = await axios.get(Album_EndPoint);
-         let data = response.data?.data;
-         if (data && Array.isArray(data)) {
-            dispatch(setAlbum(data));
-         }
-      } catch (error) {
-         console.warn(
-            'Album notice: Backend API not reachable:',
-            error.message,
-         );
-      }
-   };
+   const dispatch = useDispatch();
 
    useEffect(() => {
-      Handle_Album();
-   }, []);
+      let cancelled = false;
+
+      const handleAlbum = async () => {
+         try {
+            const response = await axios.get(Album_EndPoint);
+            const data = response.data?.data;
+            if (!cancelled && data && Array.isArray(data)) {
+               dispatch(setAlbum(data));
+            }
+         } catch (error) {
+            if (!cancelled) {
+               console.warn(
+                  'Album notice: Backend API not reachable:',
+                  error.message,
+               );
+            }
+         }
+      };
+
+      handleAlbum();
+      return () => {
+         cancelled = true;
+      };
+   }, [dispatch]);
 };
 
 export default useAlbum;

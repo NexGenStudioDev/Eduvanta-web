@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import useAlbum from '../../../hooks/useAlbum';
@@ -9,10 +8,7 @@ import { Remove_One_Album } from '../../../store/homeSlice';
 import AlbumPrimaryCard from '../../Molecules/Cards/Album/AlbumPrimaryCard';
 
 const Album = () => {
-   const [albums, setAlbums] = useState([]);
-   const [error, setError] = useState(false);
    const [userRole, setUserRole] = useState('');
-   const [isClick, setIsClick] = useState(false);
 
    const dispatch = useDispatch();
    const user = useSelector(state => state.auth.user);
@@ -20,20 +16,9 @@ const Album = () => {
 
    useAlbum();
 
-   if (!album || album.length === 0) {
-      return <Loader message='Loading albums...' />;
-   }
-
+   // All hooks must run before any early return (React error #310).
    useEffect(() => {
-      if (album) {
-         setAlbums([...album]);
-      }
-   }, [album]);
-
-   useEffect(() => {
-      if (user) {
-         setUserRole(user.role);
-      }
+      setUserRole(user?.role || '');
    }, [user]);
 
    const handleAlbumDelete = async (e, albumItem) => {
@@ -59,21 +44,22 @@ const Album = () => {
       }
    };
 
+   const albums = Array.isArray(album) ? album : [];
+
+   // Early return is safe only after every hook above has executed.
+   if (album === null || album === undefined) {
+      return <Loader message='Loading albums...' />;
+   }
+
    return (
       <div className='w-full h-auto md:h-screen px-[3vw] py-5 flex items-center justify-between flex-col md:flex-row'>
          <div className='md:w-[55vw] md:h-[62vh] w-full sm:h-full grid grid-rows-2 grid-cols-2 md:grid-cols-3 gap-[3vw] md:gap-[1.5vw] place-items-center'>
-            {error ? (
-               <h1 className='text-2xl text-center'>
-                  No Data From Backend
-               </h1>
-            ) : albums.length === 0 ? (
-               <h1 className='text-2xl text-center'>
-                  Album Not Found
-               </h1>
+            {albums.length === 0 ? (
+               <h1 className='text-2xl text-center'>Album Not Found</h1>
             ) : (
-               albums.map(item => (
+               albums.map((item, idx) => (
                   <AlbumPrimaryCard
-                     key={item._id}
+                     key={item?._id || item?.aName || idx}
                      image={item.aImage_url}
                      title={item.aName}
                      date={item.createdAt}

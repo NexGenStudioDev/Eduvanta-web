@@ -5,26 +5,33 @@ import { useEffect } from 'react';
 import axios from 'axios';
 
 const useTeacher = () => {
-   let dispatch = useDispatch();
-
-   let Handle_Teacher = async () => {
-      try {
-         let response = await axios.get(Find_Teacher_EndPoint);
-         let data = response.data?.data;
-         if (data && Array.isArray(data)) {
-            dispatch(setTeacher(data));
-         }
-      } catch (error) {
-         console.warn(
-            'Teacher notice: Backend API not reachable:',
-            error.message,
-         );
-      }
-   };
+   const dispatch = useDispatch();
 
    useEffect(() => {
-      Handle_Teacher();
-   }, []);
+      let cancelled = false;
+
+      const handleTeacher = async () => {
+         try {
+            const response = await axios.get(Find_Teacher_EndPoint);
+            const data = response.data?.data;
+            if (!cancelled && data && Array.isArray(data)) {
+               dispatch(setTeacher(data));
+            }
+         } catch (error) {
+            if (!cancelled) {
+               console.warn(
+                  'Teacher notice: Backend API not reachable:',
+                  error.message,
+               );
+            }
+         }
+      };
+
+      handleTeacher();
+      return () => {
+         cancelled = true;
+      };
+   }, [dispatch]);
 };
 
 export default useTeacher;
