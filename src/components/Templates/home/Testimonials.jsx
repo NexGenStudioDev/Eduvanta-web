@@ -4,6 +4,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useSelector } from 'react-redux';
 import useTestimonial from '../../../hooks/useTestimoniyal';
+import Loader from '../../Molecules/Loader/Loader';
 import TestimonialPrimaryCard from '../../Molecules/Cards/Testimonial/TestimonialPrimaryCard';
 
 const Testimonials = () => {
@@ -48,6 +49,10 @@ const Testimonials = () => {
          },
       ],
    };
+
+   if (!testimonialData || testimonialData.length === 0) {
+      return <Loader message='Loading testimonials...' />;
+   }
 
    return (
       <section className='w-full py-[10vh] max-[700px]:px-[5vw] px-[2vw] text-white bg-[#333] p-[2vw] flex max-[600px]:flex-col items-center overflow-hidden'>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import useAlbum from '../../../hooks/useAlbum';
+import Loader from '../../Molecules/Loader/Loader';
 import { Remove_One_Album } from '../../../store/homeSlice';
 import AlbumPrimaryCard from '../../Molecules/Cards/Album/AlbumPrimaryCard';
 
@@ -18,6 +19,10 @@ const Album = () => {
    const album = useSelector(state => state.home.Album);
 
    useAlbum();
+
+   if (!album || album.length === 0) {
+      return <Loader message='Loading albums...' />;
+   }
 
    useEffect(() => {
       if (album) {

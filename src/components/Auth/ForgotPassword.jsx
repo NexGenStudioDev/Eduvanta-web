@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { forgotPasswordSchema } from '../../validation/forgotPassword.schema';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import Loader from '../Molecules/Loader/Loader';
 
 const ForgotPassword = () => {
    const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ const ForgotPassword = () => {
    };
    return (
       <section className='w-full min-h-screen flex flex-col md:items-start justify-center lg:flex-row'>
+         {loading && <Loader message='Sending reset link...' />}
          <div className='hidden lg:block w-1/2 h-screen'>
             <img
                className='w-full h-full object-cover pointer-events-none'

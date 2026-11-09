@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import TitleContainer from '../components/Templates/payment/TitleContainer';
 import Summary from '../components/Templates/payment/Summary';
+import Loader from '../components/Molecules/Loader/Loader';
 import { useSelector } from 'react-redux';
 
 const PaymentPage = memo(() => {
@@ -133,6 +134,10 @@ const PaymentPage = memo(() => {
          amount: `${Number(Math.round(totalAmount))} INR`,
       },
    ];
+
+   if (!Student || !Course || !Payment) {
+      return <Loader message={Error ? 'Loading payment details...' : 'Loading payment details...'} />;
+   }
 
    return (
       <section className='w-full min-h-screen bg-[#F8F9FD] px-10 max-[599px]:px-4 py-20 flex items-center max-[599px]:justify-center gap-6 flex-col'>

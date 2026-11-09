@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { set_Image } from '../../../store/ImageSlice';
 import Album_Card from './Album_Card';
+import Loader from '../../Molecules/Loader/Loader';
 import {
    MdArrowBack,
    MdPhotoLibrary,
@@ -122,6 +123,10 @@ const Album_Image = () => {
       return () =>
          window.removeEventListener('keydown', handleKeyDown);
    }, [activePhotoIndex, images.length]);
+
+   if (loading) {
+      return <Loader message='Loading album...' />;
+   }
 
    return (
       <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>

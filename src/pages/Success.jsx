@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../components/Molecules/Loader/Loader';
 
 const Success = () => {
    const [searchParams] = useSearchParams();
    const [status, setStatus] = useState('Verifying payment...');
+   const [isVerifying, setIsVerifying] = useState(true);
 
    const navigate = useNavigate();
 
@@ -14,6 +16,7 @@ const Success = () => {
       const verifyPayment = async () => {
          if (!orderId) {
             setStatus('Invalid order ID.');
+            setIsVerifying(false);
             return;
          }
          try {
@@ -28,15 +31,21 @@ const Success = () => {
          } catch (err) {
             console.log('Verification error:', err);
             setStatus(
-               err.response.data.message ||
+               err.response?.data?.message ||
                   err.message ||
                   'Verification failed.',
             );
+         } finally {
+            setIsVerifying(false);
          }
       };
 
       verifyPayment();
    }, [orderId]);
+
+   if (isVerifying) {
+      return <Loader message='Verifying payment...' />;
+   }
 
    return (
       <div className='flex flex-col items-center justify-center min-h-[85vh] bg-[#FAFAFA]'>

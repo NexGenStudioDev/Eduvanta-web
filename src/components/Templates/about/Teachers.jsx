@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useTeacher from '../../../hooks/useTeacher';
+import Loader from '../../Molecules/Loader/Loader';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
@@ -96,6 +97,10 @@ const Teachers = () => {
    }, []);
 
    useTeacher();
+
+   if (!teachers || teachers.length === 0) {
+      return <Loader message='Loading teachers...' />;
+   }
 
    return (
       <section className='w-full px-10 py-10 max-[599px]:py-6 flex items-center justify-between gap-4 flex-col bg-[#333] text-white overflow-hidden'>

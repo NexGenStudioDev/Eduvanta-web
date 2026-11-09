@@ -9,6 +9,7 @@ import logo from '../../assets/images/logo.png';
 import { EDUVANTA_LOGO_URL } from '../../config/frontend.config.js';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import Loader from '../Molecules/Loader/Loader';
 
 const ResetPassword = () => {
    const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ const ResetPassword = () => {
 
    return (
       <section className='w-full min-h-screen flex flex-col md:items-start items-center justify-center lg:flex-row'>
+         {loading && <Loader message='Resetting password...' />}
          <div className='hidden lg:block w-1/2 h-screen'>
             <img
                className='w-full h-full object-cover pointer-events-none'

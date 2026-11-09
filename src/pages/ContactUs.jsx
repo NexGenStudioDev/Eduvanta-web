@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fa';
 import { MdEmail, MdSchool, MdCheckCircle } from 'react-icons/md';
 import useSocialLinks from '../hooks/useSocialLinks';
+import Loader from '../components/Molecules/Loader/Loader';
 import socket from '../config/socket.mjs';
 
 const Form_schema = yup
@@ -122,6 +123,7 @@ const ContactUs = () => {
 
    return (
       <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>
+         {isSubmitting && <Loader message='Sending your message...' />}
          {/* Page Header */}
          <div className='max-w-7xl mx-auto mb-12 text-center'>
             <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/70 text-blue-800 text-xs font-semibold uppercase tracking-wider mb-4 border border-blue-200'>

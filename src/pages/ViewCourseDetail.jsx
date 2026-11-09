@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import frontendConfig from '../config/frontend.config.js';
+import Loader from '../components/Molecules/Loader/Loader';
 import {
    MdAccessTime,
    MdCurrencyRupee,
@@ -93,15 +94,7 @@ const ViewCourseDetail = () => {
    }, [id]);
 
    if (isLoading) {
-      return (
-         <div className='min-h-screen bg-slate-50 pt-28 pb-20 px-4 sm:px-6 lg:px-12 flex items-center justify-center'>
-            <div className='bg-white rounded-3xl p-10 max-w-lg w-full text-center shadow-sm border border-gray-100 animate-pulse'>
-               <div className='w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4'></div>
-               <div className='h-6 bg-gray-200 rounded-xl w-3/4 mx-auto mb-3'></div>
-               <div className='h-4 bg-gray-200 rounded-lg w-1/2 mx-auto'></div>
-            </div>
-         </div>
-      );
+      return <Loader message='Loading course details...' />;
    }
 
    if (error || !courseData) {

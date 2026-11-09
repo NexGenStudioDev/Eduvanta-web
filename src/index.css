@@ -94,3 +94,17 @@ p {
       place-content: center;
    }
 }
+
+/* Global page loader fade-in (used by Loader / RouteLoader) */
+.loader-fade {
+   animation: loaderFade 0.25s ease-out;
+}
+
+@keyframes loaderFade {
+   from {
+      opacity: 0;
+   }
+   to {
+      opacity: 1;
+   }
+}

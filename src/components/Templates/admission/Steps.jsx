@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Loader from '../../Molecules/Loader/Loader';
 import YourInfo from './YourInfo';
 import ParentsInfo from './ParentsInfo';
 import AreyouHuman from './AreyouHuman';
@@ -687,15 +688,7 @@ const Steps = () => {
 
          {/* Fullscreen Loading Backdrop */}
          {isLoading && (
-            <div className='fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-xs text-white'>
-               <div className='w-14 h-14 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin mb-4'></div>
-               <p className='text-sm font-semibold tracking-wide'>
-                  Registering student admission application...
-               </p>
-               <p className='text-xs text-slate-300 mt-1'>
-                  Generating unique applicant ID and enrollment record
-               </p>
-            </div>
+            <Loader message='Registering student admission application...' />
          )}
       </div>
    );

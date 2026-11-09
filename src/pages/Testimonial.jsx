@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import Loader from '../components/Molecules/Loader/Loader';
 import frontendConfig from '../config/frontend.config.js';
 import {
    MdStar,
@@ -124,6 +125,10 @@ const Testimonial = () => {
          setIsSubmitting(false);
       }
    };
+
+   if (isLoadingList) {
+      return <Loader message='Loading testimonials...' />;
+   }
 
    return (
       <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>

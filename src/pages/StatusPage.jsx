@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ValidateUniqueIdInput from '../components/Atoms/Input/ValidateUniqueIdInput';
+import Loader from '../components/Molecules/Loader/Loader';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {
@@ -94,6 +95,7 @@ const StatusPage = () => {
 
    return (
       <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>
+         {isLoading && <Loader message='Checking status...' />}
          {/* Page Header */}
          <div className='max-w-4xl mx-auto mb-8 text-center'>
             <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/70 text-blue-800 text-xs font-semibold uppercase tracking-wider mb-3 border border-blue-200'>

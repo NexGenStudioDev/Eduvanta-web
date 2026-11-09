@@ -10,6 +10,7 @@ import { Sign_Up_EndPoint } from '../../utils/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Loader from '../Molecules/Loader/Loader';
 import { setUser } from '../../store/AuthSlice';
 
 const Signup = () => {
@@ -38,6 +39,7 @@ const Signup = () => {
 
    let Handle_Signup = async e => {
       e.preventDefault();
+      setIsLoading(true);
 
       if (
          !First_Name &&
@@ -65,7 +67,7 @@ const Signup = () => {
 
          dispatch(setUser(res.data.user));
       } catch (error) {
-         let error_message = error.response.data.message;
+         let error_message = error.response?.data?.message;
 
          Swal.fire({
             icon: 'error',
@@ -81,6 +83,7 @@ const Signup = () => {
 
    return (
       <section className='w-full min-h-screen flex max-[999px]:flex-col'>
+         {isLoading && <Loader message='Creating account...' />}
          <div className='left w-1/2 max-[999px]:hidden h-full'>
             <img
                className='w-full h-full object-cover pointer-events-none'

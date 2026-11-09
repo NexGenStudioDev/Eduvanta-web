@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useGallery } from '../../../hooks/useGallery';
 import useAlbum from '../../../hooks/useAlbum';
+import Loader from '../../Molecules/Loader/Loader';
 import GalleryCard from './GalleryCard';
 import {
    MdCollections,
@@ -108,6 +109,10 @@ const Gallery = () => {
       return () =>
          window.removeEventListener('keydown', handleKeyDown);
    }, [activePhotoIndex, filteredImages.length]);
+
+   if (isLoading) {
+      return <Loader message='Loading gallery...' />;
+   }
 
    return (
       <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>

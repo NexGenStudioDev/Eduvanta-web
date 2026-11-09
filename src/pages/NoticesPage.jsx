@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../components/Molecules/Loader/Loader';
 import {
    IoSearch,
    IoClose,
@@ -295,6 +296,10 @@ export default function NoticesPage() {
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
    }, [selectedNotice]);
+
+   if (loading) {
+      return <Loader message='Loading notices...' />;
+   }
 
    return (
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900 pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-12">
