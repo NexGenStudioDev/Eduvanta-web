@@ -157,110 +157,60 @@ const frontendConfig = {
             Heading: 'Learn Technology Through Practice',
             description:
                'Build practical computing skills in dedicated laboratory environments designed for programming, software development, database practice, and technical experimentation. These spaces help students apply classroom concepts, explore development tools, and work on practical assignments.',
-            image: 'https://imgs.search.brave.com/TpWi1gCy0AJYm6OHo-l4GKIFpBs3C0a3sTRDXwAPOQQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wcmVz/aWRlbmN5dW5pdmVy/c2l0eS5pbi9hc3Nl/dHMvaW1hZ2VzL2Nv/bXB1dGVyLWxhYnMt/aW1nXzIud2VicA',
-            highlight: '6 Modern Labs',
-            Number: '6 Modern Labs',
-            price: 'Academic Lab',
-            room: 'Lab 1 - 6',
          },
          {
             title: 'Digital Classrooms',
             Heading: 'A More Engaging Learning Experience',
             description:
                'Technology-enabled classrooms support interactive teaching, multimedia presentations, and collaborative learning. They provide opportunities for students to engage with concepts, participate in discussions, and learn through different teaching methods.',
-            image: 'https://imgs.search.brave.com/wmFh8bTS7tWzn4moQ0E2UjmIHPKfwdWc4_-Eim_xzVw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dmlkeWFsYXlhLm9y/Zy5pbi93cC1jb250/ZW50L3VwbG9hZHMv/MjAyNS8wMy81MWM0/ODQ0ZGQ2YjMwMGMw/ODg5YjE1ODhiNWUw/ZWI1Ni5qcGc',
-            highlight: '20 Smart Rooms',
-            Number: '20 Smart Rooms',
-            price: 'Smart Classroom',
-            room: 'Blocks A & B',
          },
          {
             title: 'Library',
             Heading: 'A Place for Knowledge and Discovery',
             description:
                'Explore books, technical references, journals, and digital learning resources to support your studies and independent research. Quiet study areas and collaborative spaces encourage focused learning, knowledge sharing, and deeper exploration of subjects.',
-            image: 'https://imgs.search.brave.com/rr3d9sS74iqNn_7aZs6RiwToF2kdQWKkqrcSRAueA1I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/bWFnbmlmaWMuY29t/L3ByZW1pdW0tcGhv/dG8vbW9kZXJuLWxp/YnJhcnktaW50ZXJp/b3Itd2l0aC1yZWFk/aW5nLWFyZWFfODkw/ODU5LTY4MjM2Lmpw/Zz9zZW10PWFpc19o/eWJyaWQmdz03NDAm/cT04MA',
-            highlight: '15,000+ Books',
-            Number: '15,000+ Books',
-            price: 'Resource Center',
-            room: 'Central Wing',
          },
          {
             title: 'Campus Hostels',
             Heading: 'A Comfortable Place to Call Home',
             description:
                'Residential facilities are designed to support students who need accommodation during their studies. Furnished rooms, internet access, security arrangements, and shared dining and recreation facilities help create a supportive residential environment.',
-            image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=600&auto=format&fit=crop',
-            highlight: '400+ Capacity',
-            Number: '400+ Capacity',
-            price: 4500,
-            room: 'Residential Block',
          },
          {
             title: 'Campus Transport',
             Heading: 'Convenient Connections to Campus',
             description:
                'Campus transport services help students travel between designated city locations and the institution. Planned routes and organized transportation support a more convenient daily commute.',
-            image: 'https://imgs.search.brave.com/ppJeDz_uTyqL-DdRyOWiEId0lJQ06wX0vACNMlJuvXc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMucGV4ZWxzLmNv/bS9waG90b3MvMTA1/ODQ1NDYvcGV4ZWxz/LXBob3RvLTEwNTg0/NTQ2LmpwZWc_Y3M9/dGlueXNyZ2ImZHBy/PTEmdz01MDA',
-            highlight: '15 City Routes',
-            Number: '15 City Routes',
-            price: 800,
-            room: 'Campus Bus Fleet',
          },
          {
             title: 'High-Speed Wi-Fi',
             Heading: 'Stay Connected. Keep Learning.',
             description:
                'Internet connectivity supports research, online learning, software development, collaboration, and access to digital resources. Students can use connected learning spaces to explore documentation, work with development tools, and continue learning beyond textbooks.',
-            image: 'https://imgs.search.brave.com/faLTu8BMORPoxIx7nAkbJkZbo1GRDDyalK87Qts_9lc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/bWFnbmlmaWMuY29t/L2ZyZWUtcGhvdG8v/dG9wLXZpZXctd2kt/Zmktcm91dGVyLXdp/dGgtc21hcnRwaG9u/ZS1ub3RlYm9va18y/My0yMTQ4Nzc5MjQ5/LmpwZz9nYT1HQTEu/MS4xNzkzNDY1NDk4/LjE3OTE5NTUxMDgm/c2VtdD1haXNfaHli/cmlkJnc9NzQwJnE9/ODA',
-            highlight: 'Up to 1 Gbps',
-            Number: 'Up to 1 Gbps',
-            price: 'Campus-Wide',
-            room: 'All Zones',
          },
          {
             title: 'Innovation and Hackathon Lounge',
             Heading: 'Turn Ideas Into Projects',
             description:
                'A collaborative space for students to experiment, develop prototypes, work in teams, and explore new ideas. Project-building activities and hackathons encourage creative thinking, practical problem-solving, and the confidence to build something of their own.',
-            image: 'https://imgs.search.brave.com/0J8xZ2n5lhSo-_YeWt_9kgA4Cbwd19eAI3FrNALd28o/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuc3RvY2tjYWtl/LmNvbS9wdWJsaWMv/ZS9iLzMvZWIzOWQ2/NDYtOGFjZi00ZDVj/LWE3ZjItNGM1NTFj/ZTU5NjA0X2xhcmdl/L2VuZ2luZWVyaW5n/LXRlYW0td29ya2lu/Zy1zdG9ja2Nha2Uu/anBn',
-            highlight: 'Dedicated Innovation Space',
-            Number: 'Dedicated Innovation Space',
-            price: 'Project Studio',
-            room: 'Maker Hub',
          },
          {
             title: 'Health and Wellness',
             Heading: 'Supporting Student Well-Being',
             description:
                'Student well-being is an important part of a positive learning experience. Health and wellness facilities aim to support students through basic medical assistance, first-aid services, and access to appropriate support when needed.',
-            image: 'https://imgs.search.brave.com/jYgAuTLpYiHY0bNRJ_aMEDo6f5NKo-qzzxzS_8Q6nD4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bXVza2Vnb25jYy5l/ZHUvd3AtY29udGVu/dC91cGxvYWRzLzIw/MjQvMDMvSGVhbHRo/X2FuZF9XZWxsbmVz/c19DZW50ZXJfMl8z/XzJfNjAwLmpwZw',
-            highlight: 'On-Campus Support',
-            Number: 'On-Campus Support',
-            price: 'Wellness Clinic',
-            room: 'Care Wing',
          },
          {
             title: 'Sports and Athletics',
             Heading: 'Stay Active. Play Together. Grow Stronger.',
             description:
                'Sports and recreational activities encourage physical fitness, teamwork, discipline, and healthy competition. Opportunities to participate in indoor and outdoor games help students balance academic responsibilities with an active campus life.',
-            image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=600&auto=format&fit=crop',
-            highlight: 'Indoor and Outdoor Activities',
-            Number: 'Indoor & Outdoor',
-            price: 'Sports Complex',
-            room: 'Arena & Fields',
          },
          {
             title: 'Career Development and Placement',
             Heading: 'Prepare for Your Next Opportunity',
             description:
                'Career preparation helps students understand professional expectations and develop the skills needed to pursue employment opportunities. Activities such as resume preparation, interview practice, technical workshops, and career guidance can help students approach their next steps with greater confidence.',
-            image: 'https://imgs.search.brave.com/bg6xfuD2xH9HB9PfzOMo5-ggvnbzDX54gdW7qnO11Lk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wY2Fj/cy5hYy5pbi93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNS8wMS9K/b2ItRmFpci0yMDI0/LTYuanBn',
-            highlight: 'Career Preparation and Guidance',
-            Number: 'Placement Cell',
-            price: 'Guidance Desk',
-            room: 'Career Center',
          },
       ],
    },
@@ -304,52 +254,7 @@ const frontendConfig = {
       heading: 'Experiences That Inspire Us',
       introduction:
          'Every learning journey is different. Student experiences can offer a valuable perspective on the teaching, resources, and opportunities that shape life at an institution.',
-      list: [
-         {
-            _id: 'testimonial-1',
-            id: 'testimonial-1',
-            name: 'Aman Raj',
-            job_Role: 'BCA (Batch 2022-2025) · Software Engineer',
-            star: 5,
-            rating: 5,
-            message:
-               'The hands-on computer labs and faculty mentorship at CIITM gave me the exact foundation I needed. Working on real full-stack web projects helped me clear campus placements with confidence.',
-            image: '/Student_Avtar.webp',
-         },
-         {
-            _id: 'testimonial-2',
-            id: 'testimonial-2',
-            name: 'Priya Kumari',
-            job_Role: 'BBA (Batch 2023-2026) · Marketing Lead',
-            star: 5,
-            rating: 5,
-            message:
-               'The faculty here emphasizes practical business case studies and communication skills. The campus atmosphere is supportive, and the seminar sessions with industry leaders are truly inspiring.',
-            image: '/Student_Avtar.webp',
-         },
-         {
-            _id: 'testimonial-3',
-            id: 'testimonial-3',
-            name: 'Rohan Verma',
-            job_Role: 'Full Stack Web Dev Certification · Frontend Dev',
-            star: 5,
-            rating: 5,
-            message:
-               'Transitioning into modern web development was smooth thanks to the guided curriculum covering React, Node.js, and databases. The hackathon lounge gave us space to build real apps.',
-            image: '/Student_Avtar.webp',
-         },
-         {
-            _id: 'testimonial-4',
-            id: 'testimonial-4',
-            name: 'Sneha Mukherjee',
-            job_Role: 'BCA (Batch 2021-2024) · Cloud Support Associate',
-            star: 5,
-            rating: 5,
-            message:
-               'From database administration to cloud architecture, CIITM provided a very well-structured syllabus. The placement cell guided us through mock technical rounds and interview preparation.',
-            image: '/Student_Avtar.webp',
-         },
-      ],
+      list: [],
    },
 
    contactPage: {

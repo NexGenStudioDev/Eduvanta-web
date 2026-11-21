@@ -1,8 +1,7 @@
-import React, { Suspense, useState, useEffect, memo } from 'react';
+import { Suspense, useState, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useTeacher from '../../../hooks/useTeacher';
-import Loader from '../../Molecules/Loader/Loader';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
@@ -96,18 +95,38 @@ const Teachers = () => {
       setSwiperVisible(window.innerWidth <= 599);
    }, []);
 
-   useTeacher();
+   const { loading, error } = useTeacher();
 
-   if (!teachers || teachers.length === 0) {
-      return <Loader message='Loading teachers...' />;
+   if (loading) {
+      return (
+         <section className='flex min-h-72 flex-col items-center justify-center bg-[#333] px-6 py-16 text-center text-white'>
+            <span className='h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-[#FF6603]' />
+            <p className='mt-4 text-base text-gray-200' role='status' aria-live='polite'>
+               Loading teacher profiles…
+            </p>
+         </section>
+      );
+   }
+
+   if (error || !teachers?.length) {
+      return (
+         <section className='bg-[#333] px-6 py-16 text-center text-white'>
+            <h2 className='text-2xl font-semibold'>Our Teachers</h2>
+            <p className='mx-auto mt-3 max-w-xl text-base text-gray-300' role='status'>
+               {error
+                  ? 'Teacher information could not be loaded. Please try again later.'
+                  : 'Teacher profiles will appear here when they are available.'}
+            </p>
+         </section>
+      );
    }
 
    return (
       <section className='w-full px-10 py-10 max-[599px]:py-6 flex items-center justify-between gap-4 flex-col bg-[#333] text-white overflow-hidden'>
-         <div className='title text-[3.5vw] font-semibold max-[599px]:text-[10vw]'>
+         <div className='title text-[clamp(1.75rem,3.5vw,3rem)] font-semibold'>
             Our Teachers
          </div>
-         <p className='text text-[1.3vw] w-[50%] max-[599px]:w-[90%] max-[599px]:font-light text-center max-[599px]:text-[3vw]'>
+         <p className='text w-full max-w-2xl text-center text-[clamp(1rem,1.3vw,1.2rem)] font-light'>
             We have a group of eminent Faculty members with great
             personality and excellence in their specific domains.
          </p>

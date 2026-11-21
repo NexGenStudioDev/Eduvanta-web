@@ -4,7 +4,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useSelector } from 'react-redux';
 import useTestimonial from '../../../hooks/useTestimoniyal';
-import Loader from '../../Molecules/Loader/Loader';
 import TestimonialPrimaryCard from '../../Molecules/Cards/Testimonial/TestimonialPrimaryCard';
 
 const Testimonials = () => {
@@ -14,7 +13,7 @@ const Testimonials = () => {
 
    const [testimonials, setTestimonials] = useState([]);
 
-   useTestimonial();
+   const { loading, error } = useTestimonial();
 
    useEffect(() => {
       if (testimonialData) {
@@ -51,7 +50,25 @@ const Testimonials = () => {
    };
 
    if (!testimonialData || testimonialData.length === 0) {
-      return <Loader message='Loading testimonials...' />;
+      return (
+         <section className='w-full py-[10vh] max-[700px]:px-[5vw] px-[2vw] text-white bg-[#333] p-[2vw]'>
+            <div className='mx-auto max-w-3xl text-center'>
+               <span className='text-xs uppercase tracking-wider text-primary font-bold'>
+                  Testimonials
+               </span>
+               <h2 className='text-3xl max-[599px]:text-[8vw] font-semibold mt-2'>
+                  Experiences That Inspire Us
+               </h2>
+               <p className='mt-4 text-gray-300' role='status' aria-live='polite'>
+                  {loading
+                     ? 'Loading student stories…'
+                     : error
+                       ? 'Student stories could not be loaded. Please check back later.'
+                       : 'Student stories will appear here when they are available.'}
+               </p>
+            </div>
+         </section>
+      );
    }
 
    return (

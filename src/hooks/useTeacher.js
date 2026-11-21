@@ -1,11 +1,12 @@
 import { useDispatch } from 'react-redux';
 import { setTeacher } from '../store/AboutSlice';
 import { Find_Teacher_EndPoint } from '../utils/constants';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const useTeacher = () => {
    const dispatch = useDispatch();
+   const [status, setStatus] = useState({ loading: true, error: false });
 
    useEffect(() => {
       let cancelled = false;
@@ -17,8 +18,10 @@ const useTeacher = () => {
             if (!cancelled && data && Array.isArray(data)) {
                dispatch(setTeacher(data));
             }
+            if (!cancelled) setStatus({ loading: false, error: false });
          } catch (error) {
             if (!cancelled) {
+               setStatus({ loading: false, error: true });
                console.warn(
                   'Teacher notice: Backend API not reachable:',
                   error.message,
@@ -32,6 +35,8 @@ const useTeacher = () => {
          cancelled = true;
       };
    }, [dispatch]);
+
+   return status;
 };
 
 export default useTeacher;

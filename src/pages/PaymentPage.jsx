@@ -29,33 +29,6 @@ const PaymentPage = memo(() => {
          Label: 'Name:',
          Value: Student?.firstName,
       },
-      {
-         Name: 'Email',
-         Placeholder: 'Your Gmail',
-         Label: 'Email:',
-         Value: Student?.email[0],
-      },
-
-      {
-         Name: 'Phone',
-         Placeholder: 'Your Number',
-         Label: 'Number:',
-         Value: Student?.contactNumber,
-      },
-
-      {
-         Name: 'FatherName',
-         Placeholder: 'Your Father Name',
-         Label: 'Father Name:',
-         Value: Student?.fatherName,
-      },
-
-      {
-         Name: 'MotherName',
-         Placeholder: 'Your Mother Name',
-         Label: 'Mother Name:',
-         Value: Student?.motherName,
-      },
    ];
 
    const Paymeny_Info = [
@@ -89,54 +62,30 @@ const PaymentPage = memo(() => {
       },
    ];
 
-   const Course_Info = [
-      {
-         id: 'Course_Name',
-         name: 'Course Name',
-         amount: '20$ Per Year',
-      },
-      {
-         id: 'course_Code',
-         name: 'Course Code',
-         amount: '20$ Per Year',
-      },
-      {
-         id: 'course_Duration',
-         name: 'Course Duration',
-         amount: '20$ Per Year',
-      },
-      {
-         id: 'course_Price',
-         name: 'Course Price',
-         amount: '20$ Per Year',
-      },
-   ];
-
    const fees = [
-      { id: 'fee', name: 'Admission Fee', amount: ' 25,000' },
-      { id: 'fee', name: '1 Year', amount: ' 50,000' },
-      { id: 'fee', name: '2 Year', amount: ' 50,000' },
-      { id: 'fee', name: '3 Year', amount: ' 50,000' },
-      { id: 'fee', name: '4 Year', amount: ' 50,000' },
+      { id: 'fee-course', name: 'Course Fee', amount: Number(Payment?.course_Fee) || 0 },
+      { id: 'fee-paid', name: 'Paid to Date', amount: Number(Payment?.amount_paid) || 0 },
    ];
-   const totalAmount = fees.reduce((sum, fee) => {
-      const amount = parseFloat(fee.amount.replace(/[^0-9.-]+/g, ''));
-      return sum + (isNaN(amount) ? 0 : amount);
-   }, 0);
-
-   console.log('Total Amount', totalAmount);
-
+   const amountDue = Number(Payment?.amount_due) || 0;
    const feesList = [
       ...fees,
       {
          id: 'total',
-         name: 'Total',
-         amount: `${Number(Math.round(totalAmount))} INR`,
+         name: 'Outstanding Balance',
+         amount: amountDue.toLocaleString('en-IN'),
       },
    ];
 
    if (!Student || !Course || !Payment) {
-      return <Loader message={Error ? 'Loading payment details...' : 'Loading payment details...'} />;
+      return Error ? (
+         <section className='min-h-[60vh] px-6 py-24 flex items-center justify-center text-center'>
+            <div className='max-w-lg rounded-2xl bg-white p-8 shadow-sm'>
+               <h1 className='text-2xl font-semibold text-gray-900'>Payment details unavailable</h1>
+               <p className='mt-3 text-gray-600'>Open the payment page from your student account after looking up your fee details.</p>
+               <a className='mt-6 inline-flex rounded-lg bg-primary px-5 py-3 font-semibold text-white' href='/'>Return to the home page</a>
+            </div>
+         </section>
+      ) : <Loader message='Loading payment details...' />;
    }
 
    return (

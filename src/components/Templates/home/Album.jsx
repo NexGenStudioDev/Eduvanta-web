@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import useAlbum from '../../../hooks/useAlbum';
-import Loader from '../../Molecules/Loader/Loader';
 import { Remove_One_Album } from '../../../store/homeSlice';
 import AlbumPrimaryCard from '../../Molecules/Cards/Album/AlbumPrimaryCard';
 
@@ -14,7 +13,7 @@ const Album = () => {
    const user = useSelector(state => state.auth.user);
    const album = useSelector(state => state.home.Album);
 
-   useAlbum();
+   const { loading, error } = useAlbum();
 
    // All hooks must run before any early return (React error #310).
    useEffect(() => {
@@ -47,15 +46,31 @@ const Album = () => {
    const albums = Array.isArray(album) ? album : [];
 
    // Early return is safe only after every hook above has executed.
-   if (album === null || album === undefined) {
-      return <Loader message='Loading albums...' />;
+   if (loading) {
+      return (
+         <section className='flex min-h-72 flex-col items-center justify-center px-6 py-12 text-center'>
+            <span className='h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-orange-500' />
+            <p className='mt-4 text-base text-slate-600' role='status' aria-live='polite'>
+               Loading campus albums…
+            </p>
+         </section>
+      );
    }
 
    return (
       <div className='w-full h-auto md:h-screen px-[3vw] py-5 flex items-center justify-between flex-col md:flex-row'>
          <div className='md:w-[55vw] md:h-[62vh] w-full sm:h-full grid grid-rows-2 grid-cols-2 md:grid-cols-3 gap-[3vw] md:gap-[1.5vw] place-items-center'>
             {albums.length === 0 ? (
-               <h1 className='text-2xl text-center'>Album Not Found</h1>
+               <div className='col-span-full mx-auto max-w-md text-center text-gray-600' role='status'>
+                  <h2 className='text-xl font-semibold text-gray-900'>
+                     {error ? 'Albums are unavailable right now' : 'No albums yet'}
+                  </h2>
+                  <p className='mt-2 text-sm'>
+                     {error
+                        ? 'Please check back in a little while.'
+                        : 'Campus albums will appear here when they are published.'}
+                  </p>
+               </div>
             ) : (
                albums.map((item, idx) => (
                   <AlbumPrimaryCard

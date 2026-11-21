@@ -9,7 +9,6 @@ import {
 
 import ErrorPage from './components/Templates/ErrorPage';
 import Loader from './components/Molecules/Loader/Loader';
-import RouteLoader from './components/Molecules/Loader/RouteLoader';
 
 // Route-based code splitting
 const Landing = lazy(() => import('./pages/Home'));
@@ -71,7 +70,6 @@ const App = () => {
    return (
       <BrowserRouter basename='/'>
          <ScrollRestoration />
-         <RouteLoader />
          <Suspense fallback={<Loader />}>
             <Routes>
                <Route path='*' element={<ErrorPage />} />

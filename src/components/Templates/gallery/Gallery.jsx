@@ -25,25 +25,14 @@ import {
 } from 'react-icons/md';
 
 const Gallery = () => {
-   const gallery = useSelector(state => state.gallery) || [];
-   const albums = useSelector(state => state.home.Album) || [];
+   const gallery = useSelector(state => state.gallery);
+   const albums = useSelector(state => state.home.Album);
 
    const [activeTab, setActiveTab] = useState('all'); // 'all' | 'albums'
    const [searchQuery, setSearchQuery] = useState('');
    const [activePhotoIndex, setActivePhotoIndex] = useState(null);
-   const [isLoading, setIsLoading] = useState(true);
-
-   useGallery();
-   useAlbum();
-
-   useEffect(() => {
-      if (gallery.length > 0 || albums.length > 0) {
-         setIsLoading(false);
-      } else {
-         const timer = setTimeout(() => setIsLoading(false), 1200);
-         return () => clearTimeout(timer);
-      }
-   }, [gallery, albums]);
+   const galleryStatus = useGallery();
+   const albumStatus = useAlbum();
 
    // Filter photos based on search query
    const filteredImages = useMemo(() => {
@@ -110,7 +99,7 @@ const Gallery = () => {
          window.removeEventListener('keydown', handleKeyDown);
    }, [activePhotoIndex, filteredImages.length]);
 
-   if (isLoading) {
+   if (galleryStatus.loading || albumStatus.loading) {
       return <Loader message='Loading gallery...' />;
    }
 
@@ -188,17 +177,15 @@ const Gallery = () => {
 
          {/* Content Display */}
          <div className='max-w-7xl mx-auto'>
-            {isLoading ? (
-               /* Skeletons */
-               <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                  {[...Array(8)].map((_, i) => (
-                     <div
-                        key={i}
-                        className='aspect-[4/3] rounded-2xl bg-gray-200 animate-pulse border border-gray-100'
-                     />
-                  ))}
-               </div>
-            ) : activeTab === 'albums' ? (
+            {(galleryStatus.error || albumStatus.error) && (
+               <p
+                  className='mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900'
+                  role='status'
+               >
+                  Some gallery content could not be loaded. Please try again later.
+               </p>
+            )}
+            {activeTab === 'albums' ? (
                /* Albums Grid */
                filteredAlbums.length === 0 ? (
                   <div className='bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100 max-w-xl mx-auto my-12'>

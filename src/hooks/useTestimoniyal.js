@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setTestimonital } from '../store/homeSlice';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import frontendConfig from '../config/frontend.config.js';
 
 const useTestimonial = () => {
    const dispatch = useDispatch();
+   const [status, setStatus] = useState({ loading: true, error: false });
 
    useEffect(() => {
       let cancelled = false;
@@ -28,10 +29,12 @@ const useTestimonial = () => {
                } else {
                   seedDefaults();
                }
+               setStatus({ loading: false, error: false });
             }
          } catch (error) {
             if (!cancelled) {
                seedDefaults();
+               setStatus({ loading: false, error: true });
                console.warn(
                   'Notice: Backend testimonials API unavailable, using default testimonials:',
                   error.message,
@@ -45,6 +48,8 @@ const useTestimonial = () => {
          cancelled = true;
       };
    }, [dispatch]);
+
+   return status;
 };
 
 export default useTestimonial;
