@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Molecules/Loader/Loader';
@@ -7,6 +7,7 @@ const Success = () => {
    const [searchParams] = useSearchParams();
    const [status, setStatus] = useState('Verifying payment...');
    const [isVerifying, setIsVerifying] = useState(true);
+   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
    const navigate = useNavigate();
 
@@ -21,15 +22,17 @@ const Success = () => {
          }
          try {
             const res = await axios.get(
-               `/api/v1/Student/verifyPayment?order_id=${orderId}`,
+               `/api/v1/Student/verifyPayment?order_id=${encodeURIComponent(orderId)}`,
             );
             const data = res?.data?.data;
-            console.log('Verification data:', data);
             if (data?.fee_status === 'Completed') {
-               setStatus('Student Fee Paid Success! ✅');
+               setPaymentSuccess(true);
+               setStatus('Your payment has been verified and recorded.');
+            } else {
+               setStatus(res.data?.message || 'The payment is not complete yet.');
             }
          } catch (err) {
-            console.log('Verification error:', err);
+            setPaymentSuccess(false);
             setStatus(
                err.response?.data?.message ||
                   err.message ||
@@ -57,9 +60,9 @@ const Success = () => {
                viewBox='0 0 24 24'
                fill='none'
             >
-               <circle cx='12' cy='12' r='12' fill='#22c55e' />
+               <circle cx='12' cy='12' r='12' fill={paymentSuccess ? '#22c55e' : '#64748b'} />
                <path
-                  d='M7 13l3 3 7-7'
+                  d={paymentSuccess ? 'M7 13l3 3 7-7' : 'M8 8l8 8M16 8l-8 8'}
                   stroke='#fff'
                   strokeWidth='2.5'
                   strokeLinecap='round'
@@ -67,8 +70,8 @@ const Success = () => {
                />
             </svg>
          </div>
-         <h1 className='text-3xl font-bold text-green-700 mb-2'>
-            Payment Successful!
+         <h1 className={`text-3xl font-bold mb-2 ${paymentSuccess ? 'text-green-700' : 'text-slate-700'}`}>
+            {paymentSuccess ? 'Payment Successful' : 'Payment not verified'}
          </h1>
          <p className='text-lg text-gray-700 mb-4'>{status}</p>
          {orderId && (

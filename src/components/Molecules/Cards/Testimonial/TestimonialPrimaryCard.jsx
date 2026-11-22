@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { MdStar } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { MdDelete } from 'react-icons/md';
@@ -6,8 +6,9 @@ import { deleteTestimonial } from '../../../../store/Testimonials.slice';
 import { toast } from 'react-toastify';
 
 const renderStars = (count = 0) => {
+   const rating = Math.min(Math.max(Number(count) || 0, 0), 5);
    return [...Array(5)].map((_, i) => (
-      <span key={i} className={`inline-block text-yellow-400`}>
+      <span key={i} className={`inline-block ${i < rating ? 'text-amber-400' : 'text-slate-300'}`}>
          <MdStar />
       </span>
    ));
@@ -20,6 +21,7 @@ const TestimonialPrimaryCard = ({
    job_Role,
    message,
    rating,
+   star,
    containerClass = '',
    imageClass = '',
    nameClass = '',
@@ -50,7 +52,7 @@ const TestimonialPrimaryCard = ({
 
    return (
       <div
-         className={`card cursor-grab w-[30vw] max-[599px]:w-full bg-white text-black rounded-xl px-6 py-8  shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between  h-full ${containerClass}`}
+         className={`card w-full max-w-2xl min-h-[250px] bg-white text-slate-900 rounded-3xl px-6 py-7 sm:px-8 sm:py-8 shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between h-full ${containerClass}`}
       >
          {user?.role === 'admin' && (
             <div className='w-full h-[5vh] flex items-center justify-end text-[2rem]'>
@@ -67,22 +69,24 @@ const TestimonialPrimaryCard = ({
 
          <div className='profile flex items-center gap-4'>
             <div
-               className={`image w-[3.5vw] max-[599px]:w-[12vw] h-[3.5vw] max-[599px]:h-[12vw] rounded-full overflow-hidden ${imageClass}`}
+               className={`image w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden bg-slate-100 ${imageClass}`}
             >
                <img
                   src={image}
                   alt={name}
+                  loading='lazy'
                   className='w-full h-full object-cover'
+                  onError={event => { event.currentTarget.src = '/logo.png'; }}
                />
             </div>
             <div className='txts'>
                <h1
-                  className={`name text-[1.5vw] max-[599px]:text-[5vw] font-semibold ${nameClass}`}
+                  className={`name text-base sm:text-lg font-semibold ${nameClass}`}
                >
                   {name}
                </h1>
                <p
-                  className={`position text-[1vw] max-[599px]:text-[3vw] ${roleClass}`}
+                  className={`position text-xs sm:text-sm text-slate-500 ${roleClass}`}
                >
                   {job_Role}
                </p>
@@ -90,15 +94,15 @@ const TestimonialPrimaryCard = ({
          </div>
 
          <p
-            className={`review mt-4 text-[1vw] max-[599px]:text-[2.5vw] ${messageClass}`}
+            className={`review mt-5 text-sm sm:text-base leading-7 text-slate-700 ${messageClass}`}
             style={{
                overflow: 'hidden',
                textOverflow: 'ellipsis',
                display: '-webkit-box',
                WebkitLineClamp: 4,
                WebkitBoxOrient: 'vertical',
-               minHeight: '4.5em',
-               maxHeight: '6em',
+               minHeight: '5.5em',
+               maxHeight: '7em',
             }}
             title={message}
          >
@@ -106,10 +110,10 @@ const TestimonialPrimaryCard = ({
          </p>
 
          <div
-            className={`stars flex justify-between mt-4 ${starClass}`}
+            className={`stars flex justify-between mt-5 ${starClass}`}
          >
-            <span className='text-[1vw] max-[599px]:text-[3.5vw]'>
-               {renderStars(rating)}
+            <span className='text-lg' aria-label={`${rating ?? star ?? 0} out of 5 stars`}>
+               {renderStars(rating ?? star)}
             </span>
          </div>
       </div>

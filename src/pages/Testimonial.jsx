@@ -3,7 +3,6 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import Loader from '../components/Molecules/Loader/Loader';
-import frontendConfig from '../config/frontend.config.js';
 import {
    MdStar,
    MdFormatQuote,
@@ -11,12 +10,12 @@ import {
    MdAddComment,
    MdClose,
    MdCloudUpload,
-   MdVerified,
 } from 'react-icons/md';
 
 const Testimonial = () => {
    const [testimonialsList, setTestimonialsList] = useState([]);
    const [isLoadingList, setIsLoadingList] = useState(true);
+   const [listError, setListError] = useState('');
    const [showSubmitModal, setShowSubmitModal] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,20 +32,16 @@ const Testimonial = () => {
    // Fetch approved testimonials from backend
    const fetchTestimonials = async () => {
       setIsLoadingList(true);
+      setListError('');
       try {
          const res = await axios.get('/api/v1/findAllTestimonials');
          const list =
             res.data?.data || res.data?.Find_Testimonial || [];
-         if (list.length > 0) {
-            setTestimonialsList(list);
-         } else if (frontendConfig.testimonials?.list) {
-            setTestimonialsList(frontendConfig.testimonials.list);
-         }
+         setTestimonialsList(Array.isArray(list) ? list : []);
       } catch (err) {
-         console.warn('Testimonials notice: Remote backend unavailable, using local student testimonials:', err.message);
-         if (frontendConfig.testimonials?.list) {
-            setTestimonialsList(frontendConfig.testimonials.list);
-         }
+         console.warn('Unable to load testimonials:', err.message);
+         setTestimonialsList([]);
+         setListError('We could not load student stories right now. Please try again.');
       } finally {
          setIsLoadingList(false);
       }
@@ -59,6 +54,11 @@ const Testimonial = () => {
    const handleImageChange = e => {
       const file = e.target.files[0];
       if (file) {
+         if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+            toast.error('Choose an image under 5 MB.');
+            e.target.value = '';
+            return;
+         }
          setImageFile(file);
          const reader = new FileReader();
          reader.onloadend = () => {
@@ -98,7 +98,7 @@ const Testimonial = () => {
             title: 'Thank You!',
             text:
                res.data?.message ||
-               'Your testimonial has been submitted successfully for verification.',
+               'Your experience has been submitted successfully.',
             icon: 'success',
             confirmButtonColor: '#2563eb',
          });
@@ -131,25 +131,27 @@ const Testimonial = () => {
    }
 
    return (
-      <div className='min-h-screen bg-slate-50 pt-24 pb-20 px-4 sm:px-6 lg:px-12'>
+      <div className='min-h-screen bg-[#f5f7fb] pt-24 pb-20 px-4 sm:px-6 lg:px-12'>
+         {isSubmitting && <Loader message='Submitting your story securely…' />}
          {/* Page Header */}
-         <div className='max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6'>
+         <div className='max-w-7xl mx-auto mb-12 rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 px-6 py-9 sm:px-10 sm:py-12 text-white shadow-xl shadow-slate-900/10 flex flex-col md:flex-row md:items-end justify-between gap-7 relative overflow-hidden'>
+            <div className='absolute -right-12 -top-24 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none' />
             <div>
-               <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/70 text-blue-800 text-xs font-semibold uppercase tracking-wider mb-3 border border-blue-200'>
+               <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-cyan-100 text-xs font-semibold uppercase tracking-wider mb-4 border border-white/15'>
                   <MdSchool size={16} />
                   <span>Eduvanta Community Voices</span>
                </div>
-               <h1 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight'>
+               <h1 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight'>
                   Experiences That Inspire Us
                </h1>
-               <p className='mt-2 text-sm sm:text-base text-gray-600 max-w-2xl'>
+               <p className='mt-3 text-sm sm:text-base text-slate-300 max-w-2xl leading-7'>
                   Every learning journey is different. Student experiences can offer a valuable perspective on the teaching, resources, and opportunities that shape life at an institution.
                </p>
             </div>
 
             <button
                onClick={() => setShowSubmitModal(true)}
-               className='inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl text-sm shadow-md transition shrink-0'
+               className='relative inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-cyan-300 hover:bg-cyan-200 text-slate-950 font-bold rounded-2xl text-sm shadow-md transition shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
             >
                <MdAddComment size={20} />
                <span>Share Your Experience</span>
@@ -167,17 +169,22 @@ const Testimonial = () => {
                      />
                   ))}
                </div>
+            ) : listError ? (
+               <div className='bg-white rounded-3xl p-10 text-center shadow-sm border border-slate-200 max-w-lg mx-auto my-12'>
+                  <h3 className='text-lg font-bold text-gray-900 mb-2'>Student stories are temporarily unavailable</h3>
+                  <p className='text-sm text-gray-500 mb-6'>{listError}</p>
+                  <button onClick={fetchTestimonials} className='px-5 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 transition'>Try again</button>
+               </div>
             ) : testimonialsList.length === 0 ? (
-               <div className='bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100 max-w-md mx-auto my-12'>
-                  <div className='w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3'>
+               <div className='bg-white rounded-3xl p-12 text-center shadow-sm border border-slate-200 max-w-md mx-auto my-12'>
+                  <div className='w-16 h-16 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center mx-auto mb-3'>
                      <MdSchool size={32} />
                   </div>
                   <h3 className='text-lg font-bold text-gray-900 mb-1'>
                      No Testimonials Yet
                   </h3>
                   <p className='text-xs text-gray-500 mb-6'>
-                     Be the first student or alumnus to share your
-                     experience with CIITM!
+                        Be the first student or alumnus to share your experience with Eduvanta.
                   </p>
                   <button
                      onClick={() => setShowSubmitModal(true)}
@@ -200,7 +207,7 @@ const Testimonial = () => {
                      return (
                         <div
                            key={item._id || idx}
-                           className='bg-white  rounded-3xl p-6 sm:p-7 shadow-sm border border-black flex flex-col justify-between hover:shadow-lg transition-shadow relative overflow-hidden'
+                           className='bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200 flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/5 transition-all relative overflow-hidden'
                         >
                            <div className='absolute top-4 right-4 text-gray-100 pointer-events-none'>
                               <MdFormatQuote size={64} />
@@ -243,10 +250,6 @@ const Testimonial = () => {
                                     <h3 className='text-sm font-bold text-gray-900'>
                                        {item.name}
                                     </h3>
-                                    <MdVerified
-                                       size={15}
-                                       className='text-blue-600'
-                                    />
                                  </div>
                                  <p className='text-xs text-gray-500 font-medium'>
                                     {item.job_Role || 'CIITM Student'}

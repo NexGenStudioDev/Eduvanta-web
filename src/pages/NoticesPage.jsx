@@ -1,102 +1,22 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Loader from '../components/Molecules/Loader/Loader';
 import {
    IoSearch,
    IoClose,
    IoFilterOutline,
    IoDocumentTextOutline,
    IoCalendarOutline,
-   IoMegaphoneOutline,
-   IoTimeOutline,
-   IoEyeOutline,
    IoArrowForward,
    IoCheckmarkOutline,
    IoShareSocialOutline,
-   IoWarningOutline,
    IoRefreshOutline,
-   IoDownloadOutline,
    IoPersonOutline,
    IoFolderOpenOutline,
 } from 'react-icons/io5';
 import { MdPictureAsPdf, MdOpenInNew, MdNotificationsActive } from 'react-icons/md';
 
-// High-quality fallback notices in case backend has no initial records
-const FALLBACK_NOTICES = [
-   {
-      _id: 'notice-sample-1',
-      title: 'End-Semester Examination Schedule — Autumn 2026',
-      content:
-         'The Controller of Examinations has published the definitive end-semester theory and practical examination schedules for all undergraduate and postgraduate engineering courses. Students are advised to verify their examination slots and download the endorsed hall tickets.',
-      dateIssued: '2026-10-25T09:00:00.000Z',
-      expiryDate: '2026-12-15T23:59:59.000Z',
-      type: 'Announcement',
-      target: 'All Students & Faculty',
-      priority: 'urgent',
-      doc_link: 'https://res.cloudinary.com/dpnc8ddpf/image/upload/v1793010964/exam_schedule_autumn2026.pdf',
-   },
-   {
-      _id: 'notice-sample-2',
-      title: 'Annual Institutional Hackathon & Tech Fest "InnoVent 2026"',
-      content:
-         'Registration is now officially open for the Annual Institutional Hackathon. Interdisciplinary teams can submit innovative prototypes spanning AI, robotics, and cyber-physical systems. Grand prizes include seed grants and direct enterprise internship tracks.',
-      dateIssued: '2026-10-22T10:30:00.000Z',
-      expiryDate: '2026-11-20T18:00:00.000Z',
-      type: 'Event',
-      target: 'Engineering & Computing Departments',
-      priority: 'high',
-      doc_link: 'https://res.cloudinary.com/dpnc8ddpf/image/upload/v1793010964/techfest_innovent_guidelines.pdf',
-   },
-   {
-      _id: 'notice-sample-3',
-      title: 'Institutional Holiday Observance for Deepawali & Chhath Puja',
-      content:
-         'The campus administrative offices, lecture complexes, and central laboratories will remain closed on account of Deepawali and Chhath Puja celebrations. Academic sessions and scheduled laboratory practicals will resume on the subsequent Monday.',
-      dateIssued: '2026-10-18T11:00:00.000Z',
-      expiryDate: '2026-11-10T23:59:59.000Z',
-      type: 'Holiday',
-      target: 'All Students, Faculty & Staff',
-      priority: 'normal',
-      doc_link: null,
-   },
-   {
-      _id: 'notice-sample-4',
-      title: 'National Scholarship & Tuition Fee Waiver Verification Desk',
-      content:
-         'The Scholarship Verification Desk is accepting verified applications and income affidavits for Central and State Merit-cum-Means scholarship schemes. Eligible applicants must present original documentation along with application acknowledgment receipts.',
-      dateIssued: '2026-10-14T14:15:00.000Z',
-      expiryDate: '2026-11-30T17:00:00.000Z',
-      type: 'General',
-      target: 'Eligible Enrolled Students',
-      priority: 'normal',
-      doc_link: 'https://res.cloudinary.com/dpnc8ddpf/image/upload/v1793010964/scholarship_verification_protocol.pdf',
-   },
-   {
-      _id: 'notice-sample-5',
-      title: 'Cloud Computing & Hybrid Infrastructure Workshop by Industry Leaders',
-      content:
-         'A 3-day practical immersion bootcamp on distributed computing, container orchestration with Kubernetes, and enterprise microservice architectures. Certificate of completion endorsed by institutional training partners.',
-      dateIssued: '2026-10-10T16:00:00.000Z',
-      expiryDate: '2026-11-05T18:00:00.000Z',
-      type: 'Event',
-      target: 'Computer Science & IT Undergraduates',
-      priority: 'high',
-      doc_link: 'https://res.cloudinary.com/dpnc8ddpf/image/upload/v1793010964/cloud_computing_workshop_brochure.pdf',
-   },
-   {
-      _id: 'notice-sample-6',
-      title: 'Library Digital Repository Upgrade & 24/7 Remote Access Activation',
-      content:
-         'The central library automated repository has completed integration with IEEE Xplore, ScienceDirect, and SpringerLink journals. Students can authenticate using their institutional credentials from campus Wi-Fi or residential networks.',
-      dateIssued: '2026-10-05T12:00:00.000Z',
-      expiryDate: '2026-12-31T23:59:59.000Z',
-      type: 'General',
-      target: 'All Registered Campus Scholars',
-      priority: 'low',
-      doc_link: null,
-   },
-];
+const NOTICE_PAGE_SIZE = 100;
 
 const CATEGORY_COLORS = {
    Announcement: {
@@ -144,7 +64,11 @@ export default function NoticesPage() {
 
    const [notices, setNotices] = useState([]);
    const [loading, setLoading] = useState(true);
+   const [loadingMore, setLoadingMore] = useState(false);
+   const [hasMore, setHasMore] = useState(false);
+   const [page, setPage] = useState(1);
    const [error, setError] = useState(null);
+   const [deepLinkStatus, setDeepLinkStatus] = useState('idle');
 
    // Search & Filters
    const [searchQuery, setSearchQuery] = useState('');
@@ -158,34 +82,48 @@ export default function NoticesPage() {
    const [copyFeedback, setCopyFeedback] = useState(false);
 
    // Fetch notices from backend API
-   const fetchNotices = useCallback(async () => {
-      setLoading(true);
-      setError(null);
+   const fetchNotices = useCallback(async ({ requestedPage = 1, append = false, signal } = {}) => {
+      if (append) {
+         setLoadingMore(true);
+      } else {
+         setLoading(true);
+         setError(null);
+      }
       try {
-         const res = await axios.get('/api/v1/notice/find');
-         let items = [];
-         if (Array.isArray(res.data?.data)) {
-            items = res.data.data;
-         } else if (Array.isArray(res.data)) {
-            items = res.data;
+         const res = await axios.get('/api/v1/notice/find', {
+            params: { limit: NOTICE_PAGE_SIZE, page: requestedPage },
+            signal,
+         });
+         const items = Array.isArray(res.data?.data)
+            ? res.data.data
+            : Array.isArray(res.data)
+              ? res.data
+              : null;
+
+         if (!items || res.data?.error || res.data?.success === false) {
+            throw new Error('The notice service returned an unexpected response.');
          }
 
-         if (items.length > 0) {
-            setNotices(items);
-         } else {
-            // Supply rich sample notices so the user immediately sees a populated notice board
-            setNotices(FALLBACK_NOTICES);
-         }
+         setNotices(current => append ? [...current, ...items] : items);
+         setPage(requestedPage);
+         setHasMore(items.length === NOTICE_PAGE_SIZE);
       } catch (err) {
-         console.warn('[NoticePage] Notice fetch error, using fallback:', err);
-         setNotices(FALLBACK_NOTICES);
+         if (axios.isCancel(err) || err.name === 'CanceledError') return;
+         console.warn('[NoticePage] Notice fetch error:', err);
+         if (!append) setNotices([]);
+         setError('Notices could not be loaded. Check your connection and try again.');
       } finally {
-         setLoading(false);
+         if (!signal?.aborted) {
+            setLoading(false);
+            setLoadingMore(false);
+         }
       }
    }, []);
 
    useEffect(() => {
-      fetchNotices();
+      const controller = new AbortController();
+      fetchNotices({ signal: controller.signal });
+      return () => controller.abort();
    }, [fetchNotices]);
 
    // Deep link support via ?id=xxx or /notice/:id
@@ -193,15 +131,46 @@ export default function NoticesPage() {
       const searchParams = new URLSearchParams(location.search);
       const queryId = searchParams.get('id') || paramId;
 
-      if (queryId && notices.length > 0) {
+      if (!queryId) {
+         setSelectedNotice(null);
+         setDeepLinkStatus('idle');
+         return undefined;
+      }
+      if (loading) return undefined;
+
+      if (notices.length > 0) {
          const found = notices.find(
             (n) => (n._id && n._id.toString() === queryId) || (n.id && n.id.toString() === queryId)
          );
          if (found) {
             setSelectedNotice(found);
+            setDeepLinkStatus('idle');
+            return undefined;
          }
       }
-   }, [location.search, paramId, notices]);
+
+      let active = true;
+      setDeepLinkStatus('loading');
+      axios
+         .get(`/api/v1/notice/find/${encodeURIComponent(queryId)}`)
+         .then(res => {
+            if (!active) return;
+            const notice = res.data?.data;
+            if (notice && (notice._id || notice.id)) {
+               setSelectedNotice(notice);
+               setDeepLinkStatus('idle');
+            } else {
+               setDeepLinkStatus('missing');
+            }
+         })
+         .catch(() => {
+            if (active) setDeepLinkStatus('missing');
+         });
+
+      return () => {
+         active = false;
+      };
+   }, [location.search, paramId, notices, loading]);
 
    // Filtered and Sorted notices
    const filteredNotices = useMemo(() => {
@@ -271,12 +240,16 @@ export default function NoticesPage() {
    };
 
    // Close single notice modal
-   const handleCloseModal = () => {
+   const handleCloseModal = useCallback(() => {
       setSelectedNotice(null);
+      if (paramId) {
+         navigate('/notices', { replace: true });
+         return;
+      }
       const searchParams = new URLSearchParams(location.search);
       searchParams.delete('id');
       navigate({ search: searchParams.toString() }, { replace: true });
-   };
+   }, [location.search, navigate, paramId]);
 
    // Copy direct share link to notice
    const handleCopyShareLink = (notice) => {
@@ -295,11 +268,7 @@ export default function NoticesPage() {
       };
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
-   }, [selectedNotice]);
-
-   if (loading) {
-      return <Loader message='Loading notices...' />;
-   }
+   }, [handleCloseModal, selectedNotice]);
 
    return (
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900 pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-12">
@@ -315,18 +284,17 @@ export default function NoticesPage() {
                      Campus Notices & Circulars
                   </h1>
                   <p className="text-sm sm:text-base text-blue-100/90 leading-relaxed">
-                     Stay informed with official academic schedules, examination timetables, departmental circulars,
-                     and verified institutional publications with official document access.
+                     Browse published notices and circulars. Open attached documents when they are available.
                   </p>
 
                   {/* Summary Metric Badges */}
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                      <div className="px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-xs font-medium text-white flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>Live Bulletin Active</span>
+                        <span>Institution notices</span>
                      </div>
                      <div className="px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-xs font-medium text-white">
-                        <span>Total Records: </span>
+                        <span>Notices Loaded: </span>
                         <strong className="text-blue-200">{notices.length}</strong>
                      </div>
                      <div className="px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-xs font-medium text-white">
@@ -353,6 +321,7 @@ export default function NoticesPage() {
                      />
                      <input
                         type="text"
+                        aria-label="Search notices"
                         placeholder="Search notices by title, keyword, department, or content..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -373,6 +342,7 @@ export default function NoticesPage() {
                   <div className="flex items-center gap-3 flex-wrap">
                      {/* Document Toggle */}
                      <select
+                        aria-label="Filter notices by document availability"
                         value={hasDocOnly}
                         onChange={(e) => setHasDocOnly(e.target.value)}
                         className="px-3.5 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-700 font-medium hover:bg-gray-100 focus:border-blue-600 outline-none transition cursor-pointer"
@@ -384,6 +354,7 @@ export default function NoticesPage() {
 
                      {/* Priority Filter */}
                      <select
+                        aria-label="Filter notices by priority"
                         value={selectedPriority}
                         onChange={(e) => setSelectedPriority(e.target.value)}
                         className="px-3.5 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-700 font-medium hover:bg-gray-100 focus:border-blue-600 outline-none transition cursor-pointer"
@@ -397,6 +368,7 @@ export default function NoticesPage() {
 
                      {/* Sort Filter */}
                      <select
+                        aria-label="Sort notices"
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                         className="px-3.5 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-700 font-medium hover:bg-gray-100 focus:border-blue-600 outline-none transition cursor-pointer"
@@ -407,8 +379,9 @@ export default function NoticesPage() {
 
                      {/* Refresh Button */}
                      <button
-                        onClick={fetchNotices}
+                        onClick={() => fetchNotices()}
                         disabled={loading}
+                        aria-label="Refresh notices"
                         className="p-3 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-blue-600 transition"
                         title="Refresh notices"
                      >
@@ -459,6 +432,33 @@ export default function NoticesPage() {
                </div>
             </div>
 
+            {error && (
+               <div className='flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between' role='alert'>
+                  <p>{error}</p>
+                  <button
+                     type='button'
+                     onClick={() => fetchNotices()}
+                     disabled={loading}
+                     className='inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-amber-900 px-4 py-2 font-semibold text-white transition hover:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-60'
+                  >
+                     <IoRefreshOutline className={loading ? 'animate-spin' : ''} />
+                     Retry
+                  </button>
+               </div>
+            )}
+
+            {deepLinkStatus === 'missing' && (
+               <div className='rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700' role='status'>
+                  That notice could not be found. It may have been removed or the link may be incorrect.
+               </div>
+            )}
+
+            {deepLinkStatus === 'loading' && (
+               <p className='text-sm text-slate-600' role='status' aria-live='polite'>
+                  Loading the linked notice…
+               </p>
+            )}
+
             {/* Notice Cards Grid */}
             {loading ? (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -483,7 +483,7 @@ export default function NoticesPage() {
                      </div>
                   ))}
                </div>
-            ) : filteredNotices.length === 0 ? (
+            ) : error && notices.length === 0 ? null : filteredNotices.length === 0 ? (
                <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center space-y-4 shadow-sm">
                   <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 mx-auto flex items-center justify-center">
                      <IoFolderOpenOutline size={32} />
@@ -492,7 +492,7 @@ export default function NoticesPage() {
                   <p className="text-sm text-gray-500 max-w-md mx-auto">
                      {hasActiveFilters
                         ? 'No campus notices match your active search terms or category filters. Try resetting the filters.'
-                        : 'There are currently no active public notices posted on the bulletin.'}
+                        : 'No notices have been published yet. Please check back later.'}
                   </p>
                   {hasActiveFilters && (
                      <button
@@ -586,7 +586,7 @@ export default function NoticesPage() {
                                     <MdOpenInNew size={13} className="opacity-70" />
                                  </a>
                               ) : (
-                                 <span className="text-[11px] text-gray-400 italic flex items-center gap-1 px-1">
+                                    <span className="text-[11px] text-gray-400 italic flex items-center gap-1 px-1">
                                     <IoDocumentTextOutline size={14} className="opacity-60" />
                                     <span>Text Circular</span>
                                  </span>
@@ -606,6 +606,20 @@ export default function NoticesPage() {
                   })}
                </div>
             )}
+
+            {hasMore && !loading && (
+               <div className='flex justify-center'>
+                  <button
+                     type='button'
+                     onClick={() => fetchNotices({ requestedPage: page + 1, append: true })}
+                     disabled={loadingMore}
+                     className='inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-wait disabled:opacity-70'
+                  >
+                     {loadingMore && <IoRefreshOutline className='animate-spin' />}
+                     {loadingMore ? 'Loading more notices…' : 'Load more notices'}
+                  </button>
+               </div>
+            )}
          </div>
 
          {/* Single Notice Full Detail Modal */}
@@ -613,6 +627,9 @@ export default function NoticesPage() {
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
                <div
                   onClick={(e) => e.stopPropagation()}
+                  role='dialog'
+                  aria-modal='true'
+                  aria-labelledby='notice-dialog-title'
                   className="w-full max-w-2xl bg-white rounded-3xl border border-gray-200 shadow-2xl p-6 sm:p-8 space-y-6 my-8 animate-in zoom-in-95 duration-150"
                >
                   {/* Modal Header */}
@@ -643,7 +660,7 @@ export default function NoticesPage() {
                            </span>
                         </div>
 
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                        <h2 id='notice-dialog-title' className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
                            {selectedNotice.title}
                         </h2>
                      </div>

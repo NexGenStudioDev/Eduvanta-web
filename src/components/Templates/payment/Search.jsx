@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { setPayment_Info } from '../../../store/PaymentSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import ValidateUniqueIdInput from '../../Atoms/Input/ValidateUniqueIdInput';
-import { ToastContainer, toast } from 'react-toastify';
-import { set } from 'react-hook-form';
+import Loader from '../../Molecules/Loader/Loader';
 
 const Search = () => {
    const dispatch = useDispatch();
@@ -13,41 +12,40 @@ const Search = () => {
    const [getValidationStatus, setGetValidationStatus] =
       useState(false);
    const [isLoading, setIsLoading] = useState(false);
-   const payment = useSelector(state => state.Payment.Payment_Info);
 
    let Handle_Search = async () => {
+      if (!getValidationStatus || !Student_Id || isLoading) return;
+      setIsLoading(true);
       try {
-         if (isLoading) {
-            const response = await axios.get(
-               `/api/v1/Student/FeeInfoByStudent?uniqueId=${Student_Id}`,
-            );
+         const response = await axios.get(
+            `/api/v1/Student/FeeInfoByStudent?uniqueId=${encodeURIComponent(Student_Id)}`,
+         );
 
-            if (response.data.success) {
-               const data = response.data.data;
-               console.log('Payment Data:', data);
-               dispatch(setPayment_Info(data));
-            }
+         if (response.data.success) {
+            dispatch(setPayment_Info(response.data.data));
+         } else {
+            throw new Error(response.data?.message || 'Unable to find payment details.');
          }
       } catch (error) {
          Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: error.response?.data?.message,
+            text: error.response?.data?.message || error.message || 'Could not load fee details. Please try again.',
             showConfirmButton: true,
          });
+      } finally {
+         setIsLoading(false);
       }
    };
 
    useEffect(() => {
       dispatch(setPayment_Info(null));
 
-      if (!payment) {
-         setIsLoading(true);
-      }
-   }, []);
+   }, [dispatch]);
 
    return (
       <div className='Student_Id_Container w-full bg-[#FAFAFA]  p-4'>
+         {isLoading && <Loader message='Looking up your fee details…' />}
          <label htmlFor='studentId'>
             <h1 className='text-[1vw] max-[599px]:text-[3vw] font-medium mb-2 ml-1'>
                Student Id
@@ -65,10 +63,10 @@ const Search = () => {
 
             <button
                className='bg-green-600 ml-[2vw] p-[0.7vw] text-white rounded-md font-medium'
-               disabled={!getValidationStatus}
+               disabled={!getValidationStatus || isLoading}
                onClick={Handle_Search}
             >
-               Search
+               {isLoading ? 'Searching…' : 'Search'}
             </button>
          </div>
       </div>

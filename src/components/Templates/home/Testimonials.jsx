@@ -3,111 +3,63 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import useTestimonial from '../../../hooks/useTestimoniyal';
 import TestimonialPrimaryCard from '../../Molecules/Cards/Testimonial/TestimonialPrimaryCard';
 
+const settings = {
+   infinite: true,
+   speed: 600,
+   slidesToShow: 1,
+   slidesToScroll: 1,
+   autoplay: true,
+   autoplaySpeed: 6000,
+   arrows: false,
+   dots: true,
+   responsive: [{ breakpoint: 640, settings: { autoplay: false } }],
+};
+
 const Testimonials = () => {
-   const testimonialData = useSelector(
-      state => state.home.Testimonital,
-   );
-
+   const testimonialData = useSelector(state => state.home.Testimonital);
    const [testimonials, setTestimonials] = useState([]);
-
    const { loading, error } = useTestimonial();
 
    useEffect(() => {
-      if (testimonialData) {
-         let arr = Array.isArray(testimonialData)
-            ? testimonialData
-            : [testimonialData];
-         if (arr.length === 1) {
-            // Duplicate the single testimonial so slider works
-            arr = [arr[0], arr[0]];
-         }
-         setTestimonials(arr);
-      }
+      setTestimonials(Array.isArray(testimonialData) ? testimonialData : []);
    }, [testimonialData]);
 
-   const settings = {
-      infinite: true,
-      speed: 800,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      centerMode: true,
-      centerPadding: '16%',
-      autoplay: true,
-      autoplaySpeed: 5000,
-      responsive: [
-         {
-            breakpoint: 600,
-            settings: {
-               slidesToShow: 1,
-               centerPadding: '0%',
-               centerMode: true,
-            },
-         },
-      ],
-   };
-
-   if (!testimonialData || testimonialData.length === 0) {
-      return (
-         <section className='w-full py-[10vh] max-[700px]:px-[5vw] px-[2vw] text-white bg-[#333] p-[2vw]'>
-            <div className='mx-auto max-w-3xl text-center'>
-               <span className='text-xs uppercase tracking-wider text-primary font-bold'>
-                  Testimonials
-               </span>
-               <h2 className='text-3xl max-[599px]:text-[8vw] font-semibold mt-2'>
-                  Experiences That Inspire Us
-               </h2>
-               <p className='mt-4 text-gray-300' role='status' aria-live='polite'>
-                  {loading
-                     ? 'Loading student stories…'
-                     : error
-                       ? 'Student stories could not be loaded. Please check back later.'
-                       : 'Student stories will appear here when they are available.'}
-               </p>
-            </div>
-         </section>
-      );
-   }
-
    return (
-      <section className='w-full py-[10vh] max-[700px]:px-[5vw] px-[2vw] text-white bg-[#333] p-[2vw] flex max-[600px]:flex-col items-center overflow-hidden'>
-         {/* Header */}
-         <div className='left-text w-[33vw] mb-8 max-[600px]:w-full ml-[2.5vw]'>
-            <span className='text-xs uppercase tracking-wider text-primary font-bold'>
-               Testimonials
-            </span>
-            <h1 className='text-[3.1vw] max-[599px]:text-[8vw] font-semibold mt-1'>
-               Experiences That Inspire Us
-            </h1>
-            <p className='text-[1vw] max-[599px]:text-[3.5vw] font-light mt-4 w-[85%] max-[599px]:w-full leading-relaxed'>
-               Every learning journey is different. Student experiences can offer a valuable perspective on the teaching, resources, and opportunities that shape life at an institution.
-            </p>
-         </div>
+      <section className='w-full overflow-hidden bg-slate-950 px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12'>
+         <div className='mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16'>
+            <div>
+               <span className='inline-flex rounded-full border border-cyan-200/20 bg-cyan-200/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-cyan-200'>Student stories</span>
+               <h2 className='mt-5 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl'>Experiences that inspire us</h2>
+               <p className='mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base'>Hear directly from students and alumni about their learning journeys at Eduvanta.</p>
+               <Link to='/testimonial' className='mt-7 inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-200'>Read community stories <span aria-hidden='true'>→</span></Link>
+            </div>
 
-         {/* Slider */}
-         <div className='carousel-container w-[55vw] max-[600px]:w-full overflow-hidden'>
-            {testimonials.length > 1 ? (
-               <Slider {...settings} className='slider opacity-100'>
-                  {testimonials.map((t, idx) => (
-                     <div
-                        key={t.id || idx}
-                        className='relative w-full flex justify-center'
-                     >
-                        <TestimonialPrimaryCard {...t} />
-                     </div>
-                  ))}
-               </Slider>
-            ) : testimonials.length === 1 ? (
-               <div className='relative w-full flex justify-center'>
-                  <TestimonialPrimaryCard {...testimonials[0]} />
-               </div>
-            ) : (
-               <div className='text-center'>
-                  <h2>No Testimonials Found</h2>
-               </div>
-            )}
+            <div className='min-w-0'>
+               {loading ? (
+                  <div className='rounded-3xl border border-white/10 bg-white/5 p-7' role='status' aria-live='polite'>
+                     <span className='sr-only'>Loading student stories</span>
+                     <div className='h-4 w-28 animate-pulse rounded bg-white/10' />
+                     <div className='mt-6 h-24 animate-pulse rounded-xl bg-white/10' />
+                     <div className='mt-7 h-12 w-48 animate-pulse rounded-xl bg-white/10' />
+                  </div>
+               ) : error ? (
+                  <div className='rounded-3xl border border-white/10 bg-white/5 p-8 text-sm leading-6 text-slate-300' role='status'>Student stories are temporarily unavailable. Please visit the testimonials page again later.</div>
+               ) : testimonials.length === 0 ? (
+                  <div className='rounded-3xl border border-white/10 bg-white/5 p-8 text-sm leading-6 text-slate-300'>No student stories have been shared yet. <Link to='/testimonial' className='font-semibold text-cyan-200 underline underline-offset-4'>Share your experience</Link>.</div>
+               ) : (
+                  <div className='testimonial-home-slider'>
+                     {testimonials.length > 1 ? (
+                        <Slider {...settings}>
+                           {testimonials.map((item, index) => <div key={item._id || item.id || index} className='px-1 pb-2'><TestimonialPrimaryCard {...item} /></div>)}
+                        </Slider>
+                     ) : <TestimonialPrimaryCard {...testimonials[0]} />}
+                  </div>
+               )}
+            </div>
          </div>
       </section>
    );

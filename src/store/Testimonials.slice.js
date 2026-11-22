@@ -21,24 +21,7 @@ export const deleteTestimonial = createAsyncThunk(
 const testimonialsSlice = createSlice({
    name: 'testimonials',
    initialState: {
-      testimonials: [
-         {
-            _id: '1',
-            name: 'Default User 1',
-            testimonial: 'This is a default testimonial 1.',
-            image: 'https://placeholder.com',
-            job_Role: 'Student',
-            rating: 5,
-         },
-         {
-            _id: '2',
-            name: 'Default User 2',
-            testimonial: 'This is a default testimonial 2.',
-            image: 'https://placeholder.com',
-            job_Role: 'Alumni',
-            rating: 4,
-         },
-      ],
+      testimonials: [],
       loading: false,
       error: null,
    },
