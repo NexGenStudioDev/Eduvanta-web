@@ -8,7 +8,7 @@ import useHomeUi from '../hooks/useHomeUi';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Loader from '../components/Molecules/Loader/Loader';
-import axios from 'axios';
+import { axios } from '../utils/apiUrl';
 
 function Home() {
    let data = useSelector(state => state.home.landingPage);
@@ -27,14 +27,14 @@ function Home() {
       const wakeBackend = async attempt => {
          controller = new AbortController();
          try {
-            const response = await axios.get('/api/health', {
+            // Ping the backend root using the configured backend client. The
+            // root route reports server availability without waiting for DB
+            // readiness, which is what this startup wake-up screen needs.
+            const response = await axios.get('/', {
                timeout: 20000,
                headers: { 'Cache-Control': 'no-cache' },
                signal: controller.signal,
             });
-            if (response.data?.status !== 'healthy') {
-               throw new Error('The backend is not ready yet.');
-            }
             if (!cancelled) {
                setBackendReady(true);
                setHealthFailed(false);
