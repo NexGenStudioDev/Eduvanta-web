@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import frontendConfig from '../config/frontend.config.js';
 import Loader from '../components/Molecules/Loader/Loader';
+import { markdownToHtml } from '../utils/markdownToHtml';
 import {
    MdAccessTime,
    MdCurrencyRupee,
@@ -310,9 +311,12 @@ const ViewCourseDetail = () => {
                               Course Description
                            </h2>
                         </div>
-                        <p className='text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-line'>
-                           {courseDescription}
-                        </p>
+                        <div
+                           className='course-description-markdown text-sm sm:text-base text-gray-700 leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_h1]:mb-3 [&_h1]:mt-6 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:mt-5 [&_h3]:text-lg [&_h3]:font-semibold [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_li]:pl-1 [&_strong]:font-semibold [&_a]:text-blue-700 [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-slate-900 [&_pre]:p-4 [&_pre]:text-slate-100 [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1 [&_code]:py-0.5 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_hr]:my-5 [&_hr]:border-gray-200'
+                           dangerouslySetInnerHTML={{
+                              __html: markdownToHtml(courseDescription),
+                           }}
+                        />
                      </div>
                   )}
 
